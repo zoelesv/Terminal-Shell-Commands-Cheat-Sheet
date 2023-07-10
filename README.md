@@ -75,14 +75,16 @@ chmod +x foo.sh          # Give everybody execute permission
 - [Variable Assignment](#Variable-Assignment)
 - [Loops](#loops)
 - [Conditional Statement](#Conditional-Statement)
+  - [File test operators](#File-test-operators)
+  - [Integer comparison](#Integer-comparison)
+  - [String comparison](#String-comparison)
+  - [Compound comparison](#Compound-comparison)
 
 ### Variable Assignment
 Use =(equal sign) w/o any space
-```bash
-num=1 # same with: export file_name='ex03_input.sh'
-```
 To refer to a variable after assignment, add $
 ```bash
+num=1 # same with: export file_name='ex03_input.sh'
 echo $num
 a=`echo Hello!`   # Assigns result of 'echo' command to 'a' ...
 echo $a
@@ -100,7 +102,7 @@ echo "$a"         # The quoted variable preserves whitespace.
 |until|until [ condition-is-true ]<br />do<br />  command(s)<br />done|until [ condition-is-true ] ; do|
 Iteration: Repeated execution of a command or group of commands, usually -- but not always, while a given condition holds, or until a given condition is met.
 
-#### Example operating on a file list contained in a variable
+##### Example operating on a file list contained in a variable
 ```bash
 #!/bin/bash
 # fileinfo.sh
@@ -133,7 +135,7 @@ done
 
 exit 0
 ```
-#### Example Operating on a parameterized file list
+##### Example Operating on a parameterized file list
 ```bash
 #!/bin/bash
 
@@ -147,7 +149,7 @@ do
  echo
 done
 ```
-#### Example 11-5. Operating on files with a for loop
+##### Example Operating on files with a for loop
 ```bash
 #!/bin/bash
 # list-glob.sh: Generating [list] in a for-loop, using "globbing" ...
@@ -190,51 +192,65 @@ elif [condition]
     then commands
 done
 
-| Type | Comparison Operators | Description | Example |Note|
-|------|----------------------|-------------|---------|----|
-|File test operators|-e|file exists|||
-||-a|file exists||This is identical in effect to -e. It has been "deprecated," and its use is discouraged.|
-||-f|file is a regular file (not a directory or device file)|||
-||-s|file is not zero size|||
-||-d|file is a directory|||
-||-b|file is a block device|if [ -b "$device0" ]<br />then<br />  echo "$device0 is a block device."<br />fi||
-||-c|file is a character device|device1="/dev/ttyS1"   # PCMCIA modem card.<br />if [ -c "$device1" ]<br />then<br />  echo "$device1 is a character device."<br />fi||
-||-p|file is a pipe|function show_input_type()<br />{<br />   [ -p /dev/fd/0 ] && echo PIPE || echo STDIN<br />}<br />show_input_type "Input"                           # STDIN<br />echo "Input" | show_input_type                    # PIPE|
-||-h|file is a symbolic link|||
-||-S|file is a [socket](https://tldp.org/LDP/abs/html/devref1.html#SOCKETREF)|||
-||-t|file (descriptor) is associated with a terminal device||This test option may be used to check whether the stdin [ -t 0 ] or stdout [ -t 1 ] in a given script is a terminal.|
-||-r|file has read permission (for the user running the test)|||
-||-w|file has write permission (for the user running the test)|||
-||-x|file has execute permission (for the user running the test)|||
-||-g|set-group-id (sgid) flag set on file or directory|||
-||-u|set-user-id (suid) flag set on file|||
-||-k|sticky bit set|||
-||-O|you are owner of file|||
-||-G|group-id of file same as yours|||
-||-N|file modified since it was last read|||
-||f1 -nt f2|file f1 is newer than f2|||
-||f1 -ot f2|file f1 is older than f2|||
-||f1 -ef f2|files f1 and f2 are hard links to the same file|||
-||!|"not" -- reverses the sense of the tests above (returns true if condition absent).|||
-|integer comparison|-eq|is equal to | if [ "$a" -eq "$b" ]||
-||-ne|is not equal to | if [ "$a" -ne "$b" ]||
-||-gt|is greater than | if [ "$a" -gt "$b" ]||
-||-ge|is greater than or equal to | if [ "$a" -ge "$b" ]||
-||-lt|is less than | if [ "$a" -lt "$b" ]||
-||-le|is less than or equal to | if [ "$a" -le "$b" ]||
-||<|is less than (within [double parentheses]()) | (("$a" < "$b"))||
-||<=|is less than or equal to (within double parentheses)|(("$a" <= "$b"))||
-||>|is greater than (within double parentheses)|(("$a" > "$b"))||
-||>=|is greater than or equal to (within double parentheses)|(("$a" >= "$b"))||
-|string comparison|=|is equal to|if [ "$a" = "$b" ]| Note the whitespace framing the =. <br />if [ "$a"="$b" ] is not equivalent to the above.|
-||==|is equal to|if [ "$a" == "$b" ]|This is a synonym for =.<br />The == comparison operator behaves differently within a [double-brackets test](#double-brackets-test) than within single brackets.|
-||!=|is not equal to|if [ "$a" != "$b" ]|This operator uses pattern matching within a [[ ... ]] construct.|
-||<|is less than, in ASCII alphabetical order|if [[ "$a" < "$b" ]] if [ "$a" \< "$b" ]|Note that the "<" needs to be escaped within a [ ] construct.|
-||>|is greater than, in ASCII alphabetical order|if [[ "$a" > "$b" ]] if [ "$a" \> "$b" ] |Note that the ">" needs to be escaped within a [ ] construct.|
-||-z|string is null, that is, has zero length|if [ -z "$String" ]||
-||-n|string is not null||The -n test requires that the string be quoted within the test brackets. <br />Using an unquoted string with ! -z, or even just the unquoted string alone within test brackets (see Example 7-6) normally works, however, this is an unsafe practice. Always quote a tested string. [1]|
-|compound comparison|-a|logical and|exp1 -a exp2 returns true if both exp1 and exp2 are true.|These are similar to the Bash comparison operators && and ||, used within double brackets. [[ condition1 && condition2 ]]|
-||-o|logical or|exp1 -o exp2 returns true if either exp1 or exp2 is true.|The -o and -a operators work with the test command or occur within [single test brackets](#single-test-brackets).|
+#### File test operators
+| Comparison Operators | Description |Note|
+|----------------------|-------------|----|
+|-e|file exists||
+|-a|file exists|This is identical in effect to -e. It has been "deprecated," and its use is discouraged.|
+|-f|file is a regular file (not a directory or device file)||
+|-s|file is not zero size||
+|-d|file is a directory||
+|-b|file is a block device|if [ -b "$device0" ]<br />then<br />  echo "$device0 is a block device."<br />fi|
+|-c|file is a character device|device1="/dev/ttyS1"   # PCMCIA modem card.<br />if [ -c "$device1" ]<br />then<br />  echo "$device1 is a character device."<br />fi|
+|-p|file is a pipe|function show_input_type()<br />{<br />   [ -p /dev/fd/0 ] && echo PIPE | echo STDIN<br />}<br />show_input_type "Input"                           # STDIN<br />echo "Input" | show_input_type                    # PIPE|
+|-h|file is a symbolic link||
+|-S|file is a [socket](https://tldp.org/LDP/abs/html/devref1.html#SOCKETREF)||
+|-t|file (descriptor) is associated with a terminal device|This test option may be used to check whether the stdin [ -t 0 ] or stdout [ -t 1 ] in a given script is a terminal.|
+|-r|file has read permission (for the user running the test)||
+|-w|file has write permission (for the user running the test)||
+|-x|file has execute permission (for the user running the test)||
+|-g|set-group-id (sgid) flag set on file or directory||
+|-u|set-user-id (suid) flag set on file||
+|-k|sticky bit set||
+|-O|you are owner of file||
+|-G|group-id of file same as yours||
+|-N|file modified since it was last read||
+|f1 -nt f2|file f1 is newer than f2||
+|f1 -ot f2|file f1 is older than f2||
+|f1 -ef f2|files f1 and f2 are hard links to the same file||
+|!|"not" -- reverses the sense of the tests above (returns true if condition absent).||
+
+
+#### Integer comparison
+| Comparison Operators | Description | Example |Note|
+|----------------------|-------------|---------|----|
+|-eq|is equal to | if [ "$a" -eq "$b" ]||
+|-ne|is not equal to | if [ "$a" -ne "$b" ]||
+|-gt|is greater than | if [ "$a" -gt "$b" ]||
+|-ge|is greater than or equal to | if [ "$a" -ge "$b" ]||
+|-lt|is less than | if [ "$a" -lt "$b" ]||
+|-le|is less than or equal to | if [ "$a" -le "$b" ]||
+|<|is less than (within [double parentheses]()) | (("$a" < "$b"))||
+|<=|is less than or equal to (within double parentheses)|(("$a" <= "$b"))||
+|>|is greater than (within double parentheses)|(("$a" > "$b"))||
+|>=|is greater than or equal to (within double parentheses)|(("$a" >= "$b"))||
+
+#### String comparison
+| Comparison Operators | Description | Example |Note|
+|----------------------|-------------|---------|----|
+|=|is equal to|if [ "$a" = "$b" ]| Note the whitespace framing the =. <br />if [ "$a"="$b" ] is not equivalent to the above.|
+|==|is equal to|if [ "$a" == "$b" ]|This is a synonym for =.<br />The == comparison operator behaves differently within a [double-brackets test](#double-brackets-test) than within single brackets.|
+|!=|is not equal to|if [ "$a" != "$b" ]|This operator uses pattern matching within a [[ ... ]] construct.|
+|<|is less than, in ASCII alphabetical order|if [[ "$a" < "$b" ]] if [ "$a" \< "$b" ]|Note that the "<" needs to be escaped within a [ ] construct.|
+|>|is greater than, in ASCII alphabetical order|if [[ "$a" > "$b" ]] if [ "$a" \> "$b" ] |Note that the ">" needs to be escaped within a [ ] construct.|
+|-z|string is null, that is, has zero length|if [ -z "$String" ]||
+|-n|string is not null||The -n test requires that the string be quoted within the test brackets. <br />Using an unquoted string with ! -z, or even just the unquoted string alone within test brackets (see Example 7-6) normally works, however, this is an unsafe practice. Always quote a tested string. [1]|
+
+#### Compound comparison
+| Comparison Operators | Description | Example |Note|
+|----------------------|-------------|---------|----|
+|-a|logical and|exp1 -a exp2 returns true if both exp1 and exp2 are true.|These are similar to the Bash comparison operators && and ||, used within double brackets. [[ condition1 && condition2 ]]|
+|-o|logical or|exp1 -o exp2 returns true if either exp1 or exp2 is true.|The -o and -a operators work with the test command or occur within [single test brackets](#single-test-brackets).|
 
 #### double-brackets test
 ```bash
@@ -295,8 +311,8 @@ exit 0
 
 
 # Reference 
-[Stanford](https://mally.stanford.edu/~sr/computing/basic-unix.html)
-[Bash Cheat Sheet](https://github.com/RehanSaeed/Bash-Cheat-Sheet)
-[tldp](https://tldp.org/LDP/abs/html/varassignment.html)
-[loop](https://tldp.org/LDP/abs/html/loops.html)
-[conditional](https://tldp.org/LDP/abs/html/tests.html)
+- [Stanford](https://mally.stanford.edu/~sr/computing/basic-unix.html)
+- [Bash Cheat Sheet](https://github.com/RehanSaeed/Bash-Cheat-Sheet)
+- [tldp](https://tldp.org/LDP/abs/html/varassignment.html)
+- [loop](https://tldp.org/LDP/abs/html/loops.html)
+- [conditional](https://tldp.org/LDP/abs/html/tests.html)
