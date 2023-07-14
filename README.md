@@ -119,21 +119,17 @@ echo
 
 for file in $FILES
 do
-
   if [ ! -e "$file" ]       # Check if file exists.
   then
     echo "$file does not exist."; echo
     continue                # On to next.
    fi
-
   ls -l $file | awk '{ print $8 "         file size: " $5 }'  # Print 2 fields.
   whatis `basename $file`   # File info.
   # Note that the whatis database needs to have been set up for this to work.
   # To do this, as root run /usr/bin/makewhatis.
   echo
 done  
-
-exit 0
 ```
 ##### Example Operating on a parameterized file list
 ```bash
@@ -180,8 +176,6 @@ do
 done
 
 echo
-
-exit 0
 ```
 
 
@@ -191,6 +185,19 @@ if [condition]
 elif [condition]
     then commands
 done
+#### read splitted string to arr
+```bash
+string="Lelouch,Akame,Kakashi,Wrath"  # Given string 
+
+IFS=','        # Setting IFS (input field separator) value as ","
+
+read -ra arr <<< "$string"    # Reading the split string into array
+
+for val in "${arr[@]}";       # Print each value of the array by using the loop
+do
+  printf "name = $val\n"
+done
+```
 
 #### File test operators
 | Comparison Operators | Description |Note|
@@ -316,3 +323,4 @@ exit 0
 - [tldp](https://tldp.org/LDP/abs/html/varassignment.html)
 - [loop](https://tldp.org/LDP/abs/html/loops.html)
 - [conditional](https://tldp.org/LDP/abs/html/tests.html)
+- [Split a string](https://www.geeksforgeeks.org/shell-script-to-split-a-string/)
