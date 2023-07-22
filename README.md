@@ -106,14 +106,7 @@ Iteration: Repeated execution of a command or group of commands, usually -- but 
 ```bash
 #!/bin/bash
 # fileinfo.sh
-
-FILES="/usr/sbin/accept
-/usr/sbin/pwck
-/usr/sbin/chroot
-/usr/bin/fakefile
-/sbin/badblocks
-/sbin/ypbind"     # List of files you are curious about.
-                  # Threw in a dummy file, /usr/bin/fakefile.
+# List of files you are curious about. # Threw in a dummy file, /usr/bin/fakefile.
 
 echo
 
@@ -126,8 +119,7 @@ do
    fi
   ls -l $file | awk '{ print $8 "         file size: " $5 }'  # Print 2 fields.
   whatis `basename $file`   # File info.
-  # Note that the whatis database needs to have been set up for this to work.
-  # To do this, as root run /usr/bin/makewhatis.
+  # Note that the whatis database needs to have been set up for this to work.# To do this, as root run /usr/bin/makewhatis.
   echo
 done  
 ```
@@ -136,7 +128,6 @@ done
 #!/bin/bash
 
 filename="*txt"
-
 for file in $filename
 do
  echo "Contents of $file"
@@ -148,8 +139,7 @@ done
 ##### Example Operating on files with a for loop
 ```bash
 #!/bin/bash
-# list-glob.sh: Generating [list] in a for-loop, using "globbing" ...
-# Globbing = filename expansion.
+# list-glob.sh: Generating [list] in a for-loop, using "globbing" ... # Globbing = filename expansion.
 
 echo
 
